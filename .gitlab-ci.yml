@@ -1,0 +1,29 @@
+image: tetraweb/php
+deploy_to_staging:
+  stage: deploy
+  script:
+  - export FACEBOOK_ID=$FACEBOOK_ID TWITTER_ID=$TWITTER_ID
+  - npm i -g now
+  - npm install
+  - cp env.staging.js env.js
+  - npm run staging
+  - cp now-staging.json dist/now.json
+  - cd dist
+  - now -t $ZEIT_API_KEY
+  - now alias -t $ZEIT_API_KEY
+  only:
+  - staging
+deploy_to_production:
+  stage: deploy
+  script:
+  - export FACEBOOK_ID=$FACEBOOK_ID TWITTER_ID=$TWITTER_ID
+  - npm i -g now now-clean
+  - npm install
+  - npm run build
+  - cp now-production.json dist/now.json
+  - cd dist
+  - now -t $ZEIT_API_KEY
+  - now alias -t $ZEIT_API_KEY
+  - now-clean -r -t $ZEIT_API_KEY
+  only:
+  - master
